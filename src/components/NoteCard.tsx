@@ -9,9 +9,27 @@ import {
   Text,
 } from "@mantine/core";
 import { IconEdit, IconAlarm } from "@tabler/icons-react";
+import {
+  NOTE_COLOR_THEMES,
+  NoteColorTheme,
+} from "../constants/noteColorThemes";
 
-export default function NoteCard() {
+const noteColorThemes = NOTE_COLOR_THEMES;
+
+interface NoteCardProps {
+  note: {
+    title: string;
+    content: string;
+    color: string | null;
+  };
+}
+
+export default function NoteCard({ note }: NoteCardProps) {
   const { editNote } = useNoteEditor();
+  const noteColor = noteColorThemes.find(
+    (val: NoteColorTheme) => val.id === note.color
+  );
+
   return (
     <Grid.Col
       span={2}
@@ -28,6 +46,7 @@ export default function NoteCard() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 10,
+          backgroundColor: noteColor ? noteColor?.secondary : "",
           borderRadius: "16px",
           boxShadow: "0 4px 24px rgba(0, 0, 0, 0.06)",
           border: "1px solid #e5e7eb",
@@ -43,26 +62,23 @@ export default function NoteCard() {
               height: "40px",
             }}
           >
-            <Title size="h4">Hi</Title>
+            <Title size="h4">{note.title}</Title>
             <ActionIcon variant="subtle" aria-label="Settings" color="black">
               <IconEdit style={{ width: "70%", height: "70%" }} stroke={1.5} />
             </ActionIcon>
           </Group>
           <Container
+            dangerouslySetInnerHTML={{ __html: note.content }}
             p={0}
+            m={0}
             style={{
               display: "-webkit-box",
               overflow: "hidden",
               textOverflow: "ellipsis",
-              WebkitLineClamp: 5 /* Number of lines */,
+              WebkitLineClamp: 3 /* Number of lines */,
               WebkitBoxOrient: "vertical",
             }}
-          >
-            This is a long text that should be truncated after a few lines. It
-            will use ellipsis if it's too long. This is a long text that should
-            be truncated after a few lines. It will use ellipsis if it's too
-            long.
-          </Container>
+          ></Container>
         </Stack>
         <Group gap="xs" mt="md">
           <IconAlarm size={16} />

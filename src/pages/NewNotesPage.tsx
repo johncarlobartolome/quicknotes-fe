@@ -1,16 +1,25 @@
 import { Button, Container, Group, Stack, Title } from "@mantine/core";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback } from "react";
 
 import { IconArrowLeft } from "@tabler/icons-react";
 import RichEditor from "../components/RichEditor";
-import { NoteEditorContext } from "../contexts/NoteEditorContext";
+import { useNoteEditor } from "../contexts/NoteEditorContext";
+import { createNote } from "../services/noteService";
+import { useNavigate } from "react-router-dom";
+import { NOTE_COLOR_THEMES } from "../constants/noteColorThemes";
+
+const noteColorThemes = NOTE_COLOR_THEMES;
 
 export default function NewNotesPage() {
-  const [title, setTitle] = useState("Untitled");
-  const [content, setContent] = useState("");
+  const { color, title, content, setTitle } = useNoteEditor();
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
   const titleRef = useRef<HTMLHeadingElement>(null);
+
+  const noteColor =
+    noteColorThemes.find((val) => val.id === color)?.secondary || "";
+
+  const navigate = useNavigate();
 
   const handleInput = useCallback(() => {
     const value = titleRef.current?.innerText || "";
@@ -20,10 +29,17 @@ export default function NewNotesPage() {
     debounceTimer.current = setTimeout(() => {
       setTitle(value);
     }, 500);
-  }, []); // 500ms debounce});
+  }, [setTitle]); // 500ms debounce});
 
-  const handleSave = () => {
-    console.log(title, content);
+  const handleSave = async () => {
+    try {
+      const data = { title, content, color };
+      const res = await createNote(data);
+      navigate("/notes");
+      console.log(res);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
@@ -32,22 +48,24 @@ export default function NewNotesPage() {
     };
   }, []);
   return (
-    <NoteEditorContext.Provider value={{ title, content, setContent }}>
+    <>
       <Container>
-        <Stack gap={0}>
-          <Group justify="space-between" my={20}>
-            <Button
-              color="black"
-              leftSection={<IconArrowLeft />}
-              variant="subtle"
-            >
-              Go back
-            </Button>
-            <Button color="black" onClick={handleSave}>
-              Save
-            </Button>
-          </Group>
+        <Group justify="space-between" my={20}>
+          <Button
+            color="black"
+            leftSection={<IconArrowLeft />}
+            variant="subtle"
+          >
+            Go back
+          </Button>
+          <Button color="black" onClick={handleSave}>
+            Save
+          </Button>
+        </Group>
+      </Container>
 
+      <Container bg={noteColor} py={20} style={{ borderRadius: "10px" }}>
+        <Stack gap={0}>
           <Title
             ref={titleRef}
             contentEditable
@@ -57,9 +75,9 @@ export default function NewNotesPage() {
             Untitled
           </Title>
 
-          <RichEditor />
+          <RichEditor noteColor={noteColor} />
         </Stack>
       </Container>
-    </NoteEditorContext.Provider>
+    </>
   );
 }

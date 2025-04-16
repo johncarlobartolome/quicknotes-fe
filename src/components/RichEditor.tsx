@@ -32,7 +32,11 @@ import { useNoteEditor } from "../contexts/NoteEditorContext";
 
 const content = "";
 
-export default function RichEditor() {
+interface RichEditorProps {
+  noteColor: string;
+}
+
+export default function RichEditor({ noteColor }: RichEditorProps) {
   const { setContent } = useNoteEditor();
   const editor = useEditor({
     extensions: [
@@ -52,7 +56,21 @@ export default function RichEditor() {
     content,
   });
   return (
-    <RichTextEditor editor={editor} mt={20}>
+    <RichTextEditor
+      editor={editor}
+      mt={20}
+      styles={{
+        root: { backgroundColor: `${noteColor}`, borderColor: "black" },
+        toolbar: { backgroundColor: `${noteColor}`, borderColor: "black" },
+        content: { backgroundColor: `${noteColor}`, borderColor: "red" },
+        control: { backgroundColor: `${noteColor}`, borderColor: "black" },
+        controlIcon: { backgroundColor: `${noteColor}`, borderColor: "black" },
+        controlsGroup: {
+          backgroundColor: `${noteColor}`,
+          borderColor: "black",
+        },
+      }}
+    >
       <RichTextEditor.Toolbar sticky stickyOffset={60}>
         <RichTextEditor.ControlsGroup>
           <RichTextEditor.Bold icon={IconBold} />

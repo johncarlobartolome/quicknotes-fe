@@ -1,29 +1,23 @@
-import { useState } from "react";
-import { NoteEditorContext } from "../contexts/NoteEditorContext";
+import { useEffect, useState } from "react";
 import { Flex, Stack, Title, Button, Grid } from "@mantine/core";
 import { IconDeviceIpadPlus } from "@tabler/icons-react";
 import NoteCard from "../components/NoteCard";
-
-const notes = [
-  {
-    _id: 1,
-    title: "My Title",
-    content: "This is the content",
-  },
-];
+import { getNotes } from "../services/noteService";
 
 export default function NotesPage() {
-  const [title] = useState("");
-  const [content, setContent] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
+  const [notes, setNotes] = useState<
+    { title: string; content: string; color: string | null }[]
+  >([]);
 
-  const handleAddNew = () => {
-    setIsEditing(true);
-  };
+  useEffect(() => {
+    const fetchNotes = async () => {
+      const data = await getNotes();
+      setNotes((prev) => [...prev, ...data]);
+    };
+    fetchNotes();
+  }, []);
 
-  if (isEditing) {
-    return <h1>Editing</h1>;
-  }
+  const handleAddNew = () => {};
 
   if (notes.length === 0) {
     return (
@@ -44,18 +38,10 @@ export default function NotesPage() {
     );
   }
   return (
-    <NoteEditorContext.Provider
-      value={{ title, content, setContent, editNote: handleAddNew }}
-    >
-      <Grid gutter={"lg"} w={"100%"} overflow="hidden" p={50}>
-        <NoteCard />
-        <Grid.Col span={2}>3</Grid.Col>
-        <Grid.Col span={2}>4</Grid.Col>
-        <Grid.Col span={2}>3</Grid.Col>
-        <Grid.Col span={2}>4</Grid.Col>
-        <Grid.Col span={2}>3</Grid.Col>
-        <Grid.Col span={2}>4</Grid.Col>
-      </Grid>
-    </NoteEditorContext.Provider>
+    <Grid gutter={"lg"} w={"100%"} overflow="hidden" p={50}>
+      {notes.map((note, index) => (
+        <NoteCard key={index} note={note} />
+      ))}
+    </Grid>
   );
 }

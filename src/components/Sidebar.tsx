@@ -5,6 +5,7 @@ import {
   Stack,
   Button,
   Container,
+  Group,
 } from "@mantine/core";
 import {
   IconCalendarWeek,
@@ -14,8 +15,30 @@ import {
   IconNote,
 } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
+import { NOTE_COLOR_THEMES } from "../constants/noteColorThemes";
+import { useNoteEditor } from "../contexts/NoteEditorContext";
+
+const noteColorThemes = NOTE_COLOR_THEMES;
 
 export default function Sidebar() {
+  const { color, setColor } = useNoteEditor();
+
+  const handleSetColor = (val: string | null) => {
+    console.log(color, val);
+    if (color === val) {
+      setColor(null);
+      return;
+    }
+    setColor(val);
+  };
+
+  // const handleSelectedColor = (idx: string) => {
+  //   if (idx === selectedColor) {
+  //     setSelectedColor(null);
+  //     return;
+  //   }
+  //   setSelectedColor(idx);
+  // };
   return (
     <AppShell.Navbar>
       <Center>
@@ -30,6 +53,21 @@ export default function Sidebar() {
             >
               Add New
             </Button>
+            <Group mt={20}>
+              {noteColorThemes.map((val) => (
+                <Button
+                  radius="xl"
+                  size="xs"
+                  color={val.secondary}
+                  style={{
+                    outline:
+                      val.id === color ? `2px ${val.secondary} solid` : ``,
+                    outlineOffset: "2px",
+                  }}
+                  onClick={() => handleSetColor(val.id)}
+                ></Button>
+              ))}
+            </Group>
           </Container>
           <NavLink
             component={Link}
