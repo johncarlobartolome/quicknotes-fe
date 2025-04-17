@@ -8,7 +8,7 @@ import {
   Title,
   Text,
 } from "@mantine/core";
-import { IconEdit, IconAlarm } from "@tabler/icons-react";
+import { IconEdit } from "@tabler/icons-react";
 import {
   NOTE_COLOR_THEMES,
   NoteColorTheme,
@@ -21,6 +21,7 @@ interface NoteCardProps {
     title: string;
     content: string;
     color: string | null;
+    date: string;
   };
 }
 
@@ -53,7 +54,7 @@ export default function NoteCard({ note }: NoteCardProps) {
         }}
       >
         <Stack gap={0}>
-          <Text size="sm">04/15/2025</Text>
+          <Text size="sm">{note.date}</Text>
           <Group
             m={0}
             gap={0}
@@ -80,10 +81,10 @@ export default function NoteCard({ note }: NoteCardProps) {
             }}
           ></Container>
         </Stack>
-        <Group gap="xs" mt="md">
+        {/* <Group gap="xs" mt="md">
           <IconAlarm size={16} />
           <Text size="sm">10:30 PM, Monday</Text>
-        </Group>
+        </Group> */}
       </Container>
     </Grid.Col>
   );
